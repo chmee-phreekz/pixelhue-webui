@@ -171,6 +171,7 @@ Tabellen für Screens (mit Typ-Badge Screen/AUX/MVR), Inputs (sourceId,
 Anschluss, aktiver Port, Signalstatus) und Layer (mit Szene, Position, Größe,
 Deckkraft, editierbar). Dazu ein paar Schnellaktionen, die direkt `wrapper.php`
 aufrufen.
+![visual ui](ui_technical.png)
 
 ### stage.html – Bildregie
 
@@ -182,7 +183,9 @@ ziehen, in der Größe ändern und über die Liste bearbeiten. (alt)
 Tastatursteuerung (Pfeiltasten, Entf, P/V), Fangen an Kanten mit Hilfslinien,
 Anschlussfilter für die Quellen und einem Feld, das die aktuelle Szene als
 fertige Wrapper-Befehle ausgibt. Beide nutzen dieselbe `api.php`.
+![visual ui](ui_visual_1.png)
 
+![visual ui](ui_visual_2.png)
 ---
 
 ## wrapper.php – die GET-Schnittstelle
