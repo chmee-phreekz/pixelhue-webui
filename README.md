@@ -1,8 +1,14 @@
-# Pixelhue P10 / P20 – Steuerung
+# Pixelhue WebUI und API–Steuerung
 
 PHP-Backend mit zwei Weboberflächen und einer GET-Schnittstelle zum Auslesen
-und Steuern von Layern auf Pixelhue-Videoprozessoren (P10 und P20, getestet
+und Steuern von Layern auf Pixelhue-Videoprozessoren (P10, P20, Q8, getestet
 mit Firmware V1.8.0).
+
+Der Hauptgedanke war die Veränderung von Inhalten via GET-API, da mir die
+Module für Companion und QSys zu umständlich waren und einen nicht-geringen
+Daten-Overhead produzieren. Mit v1.7.1 ist mir regelmäßig ein Prozessor ge-freezed.
+
+Der Code ist mit Claude erstellt worden! 
 
 Die Erkenntnisse über die Geräte-API stammen aus Wireshark-Mitschnitten der
 Original-Software „PixelFlow" und wurden an zwei Geräten (P20 virtuell, P10
