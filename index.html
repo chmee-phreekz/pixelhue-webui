@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pixelhue – Layer-Steuerung</title>
+<link rel="stylesheet" href="style.css?v=14">
+</head>
+<body>
+<header>
+    <h1>Pixelhue – Layer-Steuerung</h1>
+    <select id="processor-select" class="processor-select"></select>
+    <div id="node-status" class="status">Verbinde…</div>
+    <button id="refresh-btn">↻ Aktualisieren</button>
+    <a class="nav-link" href="stage.html">Bildregie →</a>
+</header>
+
+<main>
+    <div id="error-banner" class="error-banner" hidden></div>
+
+    <section class="panel">
+        <h2>Screens <span id="screen-count" class="count-badge"></span></h2>
+        <table id="screen-table" class="compact">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Typ</th>
+                    <th>Breite</th>
+                    <th>Höhe</th>
+                    <th>Outputs</th>
+                    <th>Enable</th>
+                    <th>Order</th>
+                </tr>
+            </thead>
+            <tbody id="screen-body">
+                <tr><td colspan="8">Lade Screens…</td></tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="panel">
+        <h2>Inputs <span id="input-count" class="count-badge"></span></h2>
+        <p class="hint">Die <strong>sourceId</strong> ist die interfaceId – nicht die Eingangsnummer,
+        und je Gerät verschieden. Genau dieser Wert gehört in <code>create_layer&amp;sourceId=…</code>.
+        Kombi-Eingänge (DP+HDMI) teilen sich einen physischen Eingang: <strong>aktiv</strong>
+        markiert den Port, der gerade durchgeschaltet ist.</p>
+        <table id="input-table" class="compact">
+            <thead>
+                <tr><th>sourceId</th><th>Name</th><th>Eingang</th><th>Port</th><th>Aktiv</th><th>Online</th></tr>
+            </thead>
+            <tbody id="input-body"><tr><td colspan="6">Lade Inputs…</td></tr></tbody>
+        </table>
+    </section>
+
+    <section class="panel">
+        <h2>Layer <span id="layer-count" class="count-badge"></span></h2>
+        <table id="layer-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Szene</th>
+                <th>Name</th>
+                <th>Quelle</th>
+                <th>Locked</th>
+                <th>Position X</th>
+                <th>Position Y</th>
+                <th>Breite</th>
+                <th>Höhe</th>
+                <th>Deckkraft (%)</th>
+                <th>Z-Order</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody id="layer-body">
+            <tr><td colspan="13">Lade Layer…</td></tr>
+        </tbody>
+        </table>
+    </section>
+
+    <section class="panel">
+        <h2>Schnellaktionen</h2>
+        <p class="hint">Rufen direkt <code>wrapper.php</code> auf – exakt so, wie es ein
+        externes Tool täte. Größe und Layer-ID kommen aus den oben geladenen Daten.</p>
+        <div class="actions">
+            <button id="qa-clear" class="danger-btn">1 · Alle Layer in Screen 1 löschen</button>
+            <button id="qa-in1">2 · Input 1 in Screengröße</button>
+            <button id="qa-in9">3 · Input 9 in Screengröße</button>
+            <button id="qa-op50">4 · Deckkraft erster Layer = 50</button>
+        </div>
+        <div id="qa-result" class="qa-result" hidden></div>
+    </section>
+</main>
+
+<footer>
+    <p>Verbindung zu Pixelhue P10 (Firmware 1.8, API v2) &middot; Layer haben kein
+    eigenes Enable/Disable-Attribut – "Ausschalten" entspricht Löschen des Layers,
+    siehe README.md.</p>
+</footer>
+
+<script src="app.js?v=14"></script>
+</body>
+</html>

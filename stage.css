@@ -1,0 +1,862 @@
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+/* ===================================================================
+   Bildregie – Pixelhue P10/P20
+
+   Gestaltung folgt dem Werkzeug, nicht dem Web: Frontplatte statt
+   Website. Gravierte Kleinbeschriftung über jedem Feld, Messwerte in
+   Monospace, Farben aus der Signalkette (HDMI/DP/SDI/OPT/Bild).
+   Signaturelement ist der Tally-Rahmen um den Canvas – rot heißt live.
+   =================================================================== */
+
+:root {
+    /* Graphit – Regieraum, nicht Schwarz: bleibt bei wenig Licht lesbar */
+    --graphite-900: #0b0e14;
+    --graphite-800: #10141d;
+    --graphite-700: #161c28;
+    --graphite-600: #1e2635;
+    --line:         #2a3446;
+    --line-soft:    #202939;
+
+    --ink:      #e9edf5;
+    --ink-dim:  #97a3ba;
+    --ink-faint:#5f6d85;
+
+    /* Tally – die einzige Stelle, an der die Seite laut sein darf */
+    --live: #ff2f2f;
+    --safe: #00e07a;
+
+    /* Signalkette: funktional, nicht dekorativ */
+    --hdmi: #4c8dff;
+    --dp:   #a97bff;
+    --sdi:  #2fd08a;
+    --opt:  #ffb03a;
+    --bkg:  #ff5fc8;
+
+    --r-s: 4px;
+    --r-m: 7px;
+    --r-l: 11px;
+
+    --display: 'Barlow Semi Condensed', 'Roboto Condensed', ui-sans-serif, system-ui, sans-serif;
+    --body:    'Barlow', ui-sans-serif, system-ui, -apple-system, sans-serif;
+    --mono:    'IBM Plex Mono', ui-monospace, 'SF Mono', Consolas, monospace;
+}
+
+* { box-sizing: border-box; }
+
+/* display:flex/grid schlägt sonst das hidden-Attribut - und damit bliebe
+   der Szenen-Umschalter bei AUX sichtbar und der Leer-Hinweis über den
+   Layern stehen. */
+[hidden] { display: none !important; }
+
+html, body { height: 100%; }
+
+body {
+    margin: 0;
+    background:
+        radial-gradient(120% 80% at 50% -10%, #141b28 0%, transparent 60%),
+        var(--graphite-900);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 14px;
+    line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+    outline: 2px solid var(--hdmi);
+    outline-offset: 2px;
+}
+
+/* --- Gravierte Beschriftung: das Typo-Motiv der Seite ---------------- */
+
+.field-label,
+.panel-title,
+.tag,
+.switch-text,
+.take-sub {
+    font-family: var(--display);
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    font-weight: 600;
+}
+
+.meta, .mono, .num { font-family: var(--mono); }
+
+/* ===================== Kommandoleiste ============================== */
+
+.bar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 9px 16px;
+    background: linear-gradient(180deg, var(--graphite-700), var(--graphite-800));
+    border-bottom: 1px solid var(--line);
+    box-shadow: 0 1px 0 rgba(255,255,255,0.03) inset, 0 8px 24px rgba(0,0,0,0.45);
+    position: sticky;
+    top: 0;
+    z-index: 40;
+}
+
+.brand { display: flex; align-items: center; gap: 9px; }
+
+/* Kein Logo erfinden: drei Balken = drei Signalwege */
+.brand-mark {
+    width: 13px; height: 18px;
+    background:
+        linear-gradient(var(--hdmi), var(--hdmi)) 0 0 / 3px 100% no-repeat,
+        linear-gradient(var(--sdi),  var(--sdi))  5px 0 / 3px 100% no-repeat,
+        linear-gradient(var(--bkg),  var(--bkg)) 10px 0 / 3px 100% no-repeat;
+    opacity: 0.9;
+}
+
+.brand-name {
+    font-family: var(--display);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.13em;
+    font-size: 15px;
+}
+
+.bar-group { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.bar-spacer { flex: 1; }
+
+.field { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.field--inline { min-width: 120px; }
+
+.field-label { font-size: 9px; color: var(--ink-faint); }
+
+.input {
+    background: var(--graphite-900);
+    color: var(--ink);
+    border: 1px solid var(--line);
+    border-radius: var(--r-s);
+    padding: 5px 8px;
+    font-family: var(--body);
+    font-size: 13px;
+    min-width: 0;
+}
+
+.input:hover { border-color: #3a4761; }
+.input--search { width: 100%; }
+
+.status { display: flex; align-items: center; gap: 7px; font-family: var(--mono); font-size: 11px; color: var(--ink-dim); }
+
+.status-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--ink-faint);
+    box-shadow: 0 0 0 3px rgba(255,255,255,0.03);
+}
+.status.is-ok   .status-dot { background: var(--safe); box-shadow: 0 0 8px var(--safe); }
+.status.is-down .status-dot { background: var(--live); box-shadow: 0 0 8px var(--live); }
+
+.btn {
+    background: var(--graphite-600);
+    color: var(--ink);
+    border: 1px solid var(--line);
+    border-radius: var(--r-s);
+    padding: 6px 11px;
+    font-family: var(--body);
+    font-size: 13px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.btn:hover { border-color: #46567a; background: #26314a; }
+.btn--quiet { background: transparent; }
+.btn:disabled { opacity: 0.45; cursor: default; }
+
+/* --- Szenentasten: Lampe links, wie am Pult --- */
+
+.scene-switch {
+    display: flex;
+    gap: 2px;
+    padding: 2px;
+    background: var(--graphite-900);
+    border: 1px solid var(--line);
+    border-radius: var(--r-m);
+}
+
+.scene-key {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
+    border: 0;
+    border-radius: var(--r-s);
+    padding: 6px 13px;
+    color: var(--ink-dim);
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+}
+
+.scene-key-lamp {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: #2c3448;
+}
+
+.scene-key:hover { color: var(--ink); }
+
+.scene-key--pgm[aria-checked="true"] { background: rgba(255,47,47,0.14); color: #ff9a9a; }
+.scene-key--pgm[aria-checked="true"] .scene-key-lamp { background: var(--live); box-shadow: 0 0 9px var(--live); }
+.scene-key--pvw[aria-checked="true"] { background: rgba(0,224,122,0.12); color: #6ff0b4; }
+.scene-key--pvw[aria-checked="true"] .scene-key-lamp { background: var(--safe); box-shadow: 0 0 9px var(--safe); }
+
+/* --- TAKE: die eine Taste, die man im Dunkeln findet --- */
+
+.take {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    min-width: 108px;
+    padding: 5px 18px 6px;
+    border: 1px solid #ff5a5a;
+    border-radius: var(--r-m);
+    background: linear-gradient(180deg, #ff4646, #cf1414);
+    color: #fff;
+    cursor: pointer;
+    box-shadow: 0 2px 0 #7d0d0d, 0 6px 18px rgba(255,47,47,0.28);
+    transition: transform 0.06s ease, box-shadow 0.06s ease;
+}
+
+.take:hover { filter: brightness(1.07); }
+
+/* Tastenweg statt Farbwechsel: die Taste geht runter */
+.take:active {
+    transform: translateY(2px);
+    box-shadow: 0 0 0 #7d0d0d, 0 3px 10px rgba(255,47,47,0.3);
+}
+
+.take-label {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 17px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    line-height: 1.1;
+}
+
+.take-sub { font-size: 8px; opacity: 0.8; letter-spacing: 0.1em; }
+.take:disabled { opacity: 0.5; cursor: default; }
+.take.is-done { background: linear-gradient(180deg, #22d97c, #0a9b52); border-color: #3ff09a; box-shadow: 0 2px 0 #06643a; }
+
+/* ===================== Layout ====================================== */
+
+.work {
+    display: grid;
+    grid-template-columns: 268px minmax(0, 1fr) 400px;
+    gap: 14px;
+    padding: 14px;
+    align-items: start;
+}
+
+.panel {
+    background: linear-gradient(180deg, var(--graphite-800), var(--graphite-900));
+    border: 1px solid var(--line-soft);
+    border-radius: var(--r-l);
+    padding: 12px;
+    min-width: 0;
+}
+
+.panel--cmd { margin: 0 14px 20px; padding: 0; }
+
+.panel-head {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin-bottom: 10px;
+}
+
+.panel-head--summary { margin: 0; padding: 12px; cursor: pointer; list-style: none; }
+.panel-head--summary::-webkit-details-marker { display: none; }
+.panel-head--summary .meta { margin-right: auto; }
+
+.panel-title {
+    font-size: 11px;
+    color: var(--ink-dim);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+.tag {
+    font-size: 9px;
+    padding: 2px 6px;
+    border-radius: var(--r-s);
+    background: rgba(255,255,255,0.05);
+    color: var(--ink-dim);
+    border: 1px solid var(--line);
+}
+
+.tag--type[data-type="Screen"] { color: var(--hdmi); border-color: rgba(76,141,255,0.4); }
+.tag--type[data-type="AUX"]    { color: var(--opt);  border-color: rgba(255,176,58,0.4); }
+.tag--type[data-type="MVR"]    { color: var(--ink-dim); }
+
+.screen-name {
+    font-family: var(--body);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink);
+    text-transform: none;
+    letter-spacing: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.meta { font-size: 10px; color: var(--ink-faint); margin-left: auto; white-space: nowrap; }
+
+.hint { color: var(--ink-faint); font-size: 11px; margin: 0; }
+.hint--foot { margin-top: 10px; border-top: 1px dashed var(--line-soft); padding-top: 8px; }
+
+/* ===================== Quellen ===================================== */
+
+.panel-tools { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+
+.switch { display: inline-flex; align-items: center; gap: 7px; cursor: pointer; }
+.switch input { position: absolute; opacity: 0; width: 0; height: 0; }
+
+.switch-track {
+    width: 30px; height: 17px;
+    border-radius: 9px;
+    background: var(--graphite-600);
+    border: 1px solid var(--line);
+    position: relative;
+    flex: none;
+    transition: background 0.15s ease;
+}
+
+.switch-track::after {
+    content: '';
+    position: absolute;
+    top: 2px; left: 2px;
+    width: 11px; height: 11px;
+    border-radius: 50%;
+    background: var(--ink-faint);
+    transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.switch input:checked + .switch-track { background: rgba(76,141,255,0.35); border-color: var(--hdmi); }
+.switch input:checked + .switch-track::after { transform: translateX(13px); background: var(--hdmi); }
+.switch input:focus-visible + .switch-track { outline: 2px solid var(--hdmi); outline-offset: 2px; }
+.switch-text { font-size: 9px; color: var(--ink-dim); }
+
+/* Spalten-Flex + max-height heißt: Kinder schrumpfen entlang der
+   Hauptachse, statt zu scrollen. Ohne flex:none werden die Kacheln bei
+   vollem Bestand platt gedrückt. */
+.palette {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-height: min(60vh, 640px);
+    overflow-y: auto;
+    padding-right: 3px;
+}
+
+.palette > * { flex: none; }
+
+.palette::-webkit-scrollbar { width: 8px; }
+.palette::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }
+
+.pal-group {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-family: var(--display);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 9px;
+    color: var(--ink-faint);
+    padding: 9px 0 3px;
+    position: sticky;
+    top: 0;
+    background: var(--graphite-800);
+    z-index: 2;
+}
+
+.pal-group::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--line-soft);
+}
+
+/* --- Eingang: eine Zeile, weil zwölf davon untereinander stehen ------
+   Beschriftet wird der physische Eingang ("Input 5"), nicht der interne
+   Interface-Name - so steht es auch auf der Gerätefront. Der volle Name
+   hängt im title. */
+
+.src {
+    --hue: var(--ink-faint);
+    display: grid;
+    grid-template-columns: 3px 30px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 8px;
+    height: 30px;
+    background: var(--graphite-700);
+    border: 1px solid var(--line-soft);
+    border-radius: var(--r-s);
+    padding-right: 8px;
+    overflow: hidden;
+    cursor: grab;
+    user-select: none;
+}
+
+.src::before { content: ''; align-self: stretch; background: var(--hue); }
+.src:hover { border-color: var(--hue); background: #1b2333; }
+.src:active { cursor: grabbing; }
+.src.is-dragging { opacity: 0.35; }
+
+/* Nicht durchgeschaltete Ports eines Kombi-Eingangs */
+.src.is-inactive { opacity: 0.42; }
+.src.is-inactive .src-port { text-decoration: line-through; }
+
+.src-id {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-faint);
+    text-align: right;
+}
+
+.src-name {
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.src-port {
+    font-family: var(--display);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--hue);
+}
+
+.src-warn {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--ink-faint);
+}
+
+.src[data-port="HDMI"] { --hue: var(--hdmi); }
+.src[data-port="DP"]   { --hue: var(--dp); }
+.src[data-port="SDI"]  { --hue: var(--sdi); }
+.src[data-port="OPT"]  { --hue: var(--opt); }
+
+/* --- Bilder: Raster statt Stapel. Fünf volle Breiten übereinander sind
+   eine Bildschirmhöhe; als Kacheln sind es zwei Reihen. --- */
+
+.pics {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+    gap: 5px;
+    flex: none;
+}
+
+.pic {
+    background: var(--graphite-700);
+    border: 1px solid var(--line-soft);
+    border-top: 2px solid var(--bkg);
+    border-radius: var(--r-s);
+    padding: 4px;
+    cursor: grab;
+    user-select: none;
+    overflow: hidden;
+}
+
+.pic:hover { border-color: var(--bkg); background: #241a2c; }
+.pic.is-dragging { opacity: 0.35; }
+
+.pic-thumb {
+    display: block;
+    width: 100%;
+    height: 62px;                 /* Vorgabe war: nie höher als 96 px */
+    object-fit: contain;
+    background: var(--graphite-900);
+    border-radius: 2px;
+    pointer-events: none;
+}
+
+.pic-name {
+    display: block;
+    font-size: 11px;
+    margin-top: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.pic-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 4px;
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--ink-faint);
+}
+
+/* --- Typfilter: schneller als tippen --- */
+
+.segmented { display: flex; flex-wrap: wrap; gap: 3px; }
+
+.seg {
+    --hue: var(--ink-dim);
+    background: var(--graphite-900);
+    border: 1px solid var(--line);
+    border-radius: var(--r-s);
+    padding: 3px 7px;
+    color: var(--ink-faint);
+    font-family: var(--display);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.seg:hover { color: var(--ink); }
+.seg[aria-pressed="true"] { color: var(--hue); border-color: var(--hue); background: color-mix(in srgb, var(--hue) 14%, transparent); }
+.seg[data-port="HDMI"] { --hue: var(--hdmi); }
+.seg[data-port="DP"]   { --hue: var(--dp); }
+.seg[data-port="SDI"]  { --hue: var(--sdi); }
+.seg[data-port="OPT"]  { --hue: var(--opt); }
+.seg[data-port="BKG"]  { --hue: var(--bkg); }
+
+.seg-n { font-family: var(--mono); font-weight: 400; opacity: 0.7; margin-left: 3px; }
+
+/* ===================== Bühne / Tally =============================== */
+
+/* Signaturelement: der Rahmen ist die Statusanzeige. */
+.tally {
+    --tally: var(--live);
+    border: 1px solid var(--line);
+    border-radius: var(--r-m);
+    padding: 0 3px 3px;
+    background: var(--graphite-900);
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.5), 0 0 22px -6px var(--tally);
+}
+
+.tally[data-scene="pvw"] { --tally: var(--safe); }
+
+.tally-strip {
+    height: 16px;
+    margin: 0 -3px 3px;
+    border-radius: var(--r-m) var(--r-m) 0 0;
+    background: linear-gradient(180deg, var(--tally), color-mix(in srgb, var(--tally) 55%, #000));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 16px -2px var(--tally);
+}
+
+.tally-word {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 9px;
+    letter-spacing: 0.4em;
+    text-indent: 0.4em;
+    text-transform: uppercase;
+    color: rgba(0,0,0,0.62);
+}
+
+/* Nur PGM atmet – Preview soll ruhig bleiben */
+.tally[data-scene="pgm"] .tally-strip { animation: tally-breathe 2.6s ease-in-out infinite; }
+
+@keyframes tally-breathe {
+    0%, 100% { filter: brightness(1); }
+    50%      { filter: brightness(1.35); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tally[data-scene="pgm"] .tally-strip { animation: none; }
+    * { transition: none !important; }
+}
+
+.canvas {
+    position: relative;
+    width: 100%;
+    border-radius: 0 0 var(--r-s) var(--r-s);
+    background:
+        linear-gradient(45deg, #0e131c 25%, transparent 25%) -8px 0/16px 16px,
+        linear-gradient(-45deg, #0e131c 25%, transparent 25%) -8px 0/16px 16px,
+        linear-gradient(45deg, transparent 75%, #0e131c 75%) 0 0/16px 16px,
+        linear-gradient(-45deg, transparent 75%, #0e131c 75%) 0 0/16px 16px,
+        #0a0d13;
+    overflow: hidden;
+}
+
+.canvas.is-over { outline: 2px dashed var(--tally); outline-offset: -5px; }
+
+.canvas-empty {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ink-faint);
+    font-size: 13px;
+    margin: 0;
+    pointer-events: none;
+}
+
+.guides { position: absolute; inset: 0; pointer-events: none; z-index: 9; }
+
+.guide {
+    position: absolute;
+    background: var(--opt);
+    box-shadow: 0 0 6px var(--opt);
+}
+.guide--v { top: 0; bottom: 0; width: 1px; }
+.guide--h { left: 0; right: 0; height: 1px; }
+
+.layer {
+    --hue: var(--hdmi);
+    position: absolute;
+    border: 1px solid color-mix(in srgb, var(--hue) 75%, #fff);
+    background: color-mix(in srgb, var(--hue) 26%, transparent);
+    border-radius: 2px;
+    cursor: grab;
+    overflow: hidden;
+    user-select: none;
+}
+
+.layer[data-port="HDMI"] { --hue: var(--hdmi); }
+.layer[data-port="DP"]   { --hue: var(--dp); }
+.layer[data-port="SDI"]  { --hue: var(--sdi); }
+.layer[data-port="OPT"]  { --hue: var(--opt); }
+.layer[data-port="BKG"]  { --hue: var(--bkg); }
+
+.layer:hover { border-color: #fff; }
+.layer.is-selected { outline: 2px solid var(--ink); outline-offset: -2px; z-index: 5; }
+.layer.is-dragging { cursor: grabbing; }
+.layer.is-busy { pointer-events: none; opacity: 0.45; }
+
+.layer-tag {
+    font-family: var(--display);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 5px;
+    background: rgba(0,0,0,0.6);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    pointer-events: none;
+}
+
+.layer-dims {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--ink-dim);
+    padding: 0 5px;
+    pointer-events: none;
+}
+
+.grip {
+    position: absolute;
+    right: 0; bottom: 0;
+    width: 15px; height: 15px;
+    cursor: nwse-resize;
+    background: linear-gradient(135deg, transparent 45%, var(--ink) 45%, var(--ink) 55%, transparent 55%,
+                transparent 68%, var(--ink) 68%, var(--ink) 78%, transparent 78%);
+    opacity: 0.75;
+}
+
+/* --- Hintergrundleiste --- */
+
+.bkg {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+    padding: 7px 10px;
+    background: color-mix(in srgb, var(--bkg) 7%, var(--graphite-800));
+    border: 1px solid var(--line-soft);
+    border-left: 2px solid var(--bkg);
+    border-radius: var(--r-m);
+}
+
+.bkg .input { flex: 1; max-width: 380px; }
+.bkg.is-off { opacity: 0.55; }
+
+/* ===================== Layer-Liste ================================= */
+
+/* Kein Tabellenkopf: jedes Feld trägt seine eigene Gravur. Damit
+   reflowen die Zeilen ohne Kopfzeile, die sonst mitwandern müsste. */
+
+.layers { display: flex; flex-direction: column; gap: 8px; max-height: min(58vh, 620px); overflow-y: auto; padding-right: 2px; }
+.layers > * { flex: none; }   /* sonst werden die Zeilen platt gedrückt */
+
+.lrow {
+    --hue: var(--hdmi);
+    background: var(--graphite-700);
+    border: 1px solid var(--line-soft);
+    border-left: 3px solid var(--hue);
+    border-radius: var(--r-m);
+    padding: 8px 9px;
+}
+
+.lrow[data-port="HDMI"] { --hue: var(--hdmi); }
+.lrow[data-port="DP"]   { --hue: var(--dp); }
+.lrow[data-port="SDI"]  { --hue: var(--sdi); }
+.lrow[data-port="OPT"]  { --hue: var(--opt); }
+.lrow[data-port="BKG"]  { --hue: var(--bkg); }
+
+.lrow.is-selected { border-color: var(--ink-dim); background: #1b2333; }
+
+/* Wird die Spalte schmal, wandern Presets und Löschen in die zweite
+   Zeile - der Quellenname behält Vorrang, er ist die Identität des Layers. */
+.lrow-head { display: flex; align-items: center; gap: 8px; cursor: pointer; flex-wrap: wrap; }
+
+.lrow-name {
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1 1 130px;
+    min-width: 0;
+}
+
+.lrow-head .presets { margin-left: auto; }
+
+.lrow-id { font-family: var(--mono); font-size: 10px; color: var(--ink-faint); }
+
+.icon-btn {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--ink-dim);
+    border-radius: var(--r-s);
+    padding: 2px 7px;
+    font-size: 11px;
+    cursor: pointer;
+    font-family: var(--body);
+}
+
+.icon-btn:hover { color: var(--ink); border-color: #46567a; }
+.icon-btn--danger:hover { background: var(--live); border-color: var(--live); color: #fff; }
+
+/* Felder verteilen sich selbst: min 62px, so viele wie passen */
+.lrow-fields {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(62px, 1fr));
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.fld { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+
+.fld-label {
+    font-family: var(--display);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 8px;
+    color: var(--ink-faint);
+}
+
+.fld input[type="number"] {
+    width: 100%;
+    background: var(--graphite-900);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    border-radius: var(--r-s);
+    padding: 4px 5px;
+    font-family: var(--mono);
+    font-size: 12px;
+}
+
+.fld input:focus { border-color: var(--hdmi); }
+
+.lrow-opacity { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+.lrow-opacity input[type="range"] { flex: 1; accent-color: var(--hue); min-width: 0; }
+.op-val { font-family: var(--mono); font-size: 11px; color: var(--ink-dim); width: 34px; text-align: right; }
+
+.presets { display: flex; gap: 4px; }
+
+/* ===================== Befehle ===================================== */
+
+.cmd-list { display: flex; flex-direction: column; gap: 5px; padding: 0 12px 12px; }
+
+.cmd {
+    background: var(--graphite-900);
+    border: 1px solid var(--line-soft);
+    border-left: 2px solid var(--hdmi);
+    border-radius: var(--r-s);
+    padding: 6px 9px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-dim);
+    word-break: break-all;
+    user-select: all;
+}
+
+.cmd--clear { border-left-color: var(--live); }
+.cmd-step { color: var(--ink-faint); user-select: none; display: block; font-size: 10px; margin-bottom: 2px; }
+
+/* ===================== Meldungen =================================== */
+
+.toasts {
+    position: fixed;
+    right: 14px;
+    bottom: 14px;
+    z-index: 90;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    max-width: min(460px, 92vw);
+}
+
+.toast {
+    background: var(--graphite-700);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--ink-dim);
+    border-radius: var(--r-m);
+    padding: 9px 11px;
+    font-size: 12.5px;
+    box-shadow: 0 12px 34px rgba(0,0,0,0.55);
+    animation: toast-in 0.18s ease-out;
+}
+
+.toast--ok   { border-left-color: var(--safe); }
+.toast--err  { border-left-color: var(--live); }
+.toast-title { font-family: var(--display); text-transform: uppercase; letter-spacing: 0.09em; font-size: 9px; color: var(--ink-faint); }
+.toast-body  { white-space: pre-wrap; }
+
+@keyframes toast-in { from { opacity: 0; transform: translateY(6px); } }
+
+/* ===================== Responsiv =================================== */
+
+/* Querformat ist der Normalfall, aber die Spalten dürfen wandern. */
+
+@media (max-width: 1500px) {
+    .work { grid-template-columns: 244px minmax(0, 1fr) 330px; }
+}
+
+@media (max-width: 1200px) {
+    .work { grid-template-columns: 232px minmax(0, 1fr); }
+    .panel--layers { grid-column: 1 / -1; }
+    .layers { max-height: none; }
+}
+
+@media (max-width: 820px) {
+    .work { grid-template-columns: 1fr; }
+    .palette { max-height: none; }
+    .pics { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+    .bar { flex-wrap: wrap; }
+    .bar-spacer { display: none; }
+    .btn-text { display: none; }
+}

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bildregie · Pixelhue</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="stage.css?v=2">
+</head>
+<body>
+
+<!-- Kommandoleiste ---------------------------------------------------- -->
+<header class="bar">
+    <div class="brand">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span class="brand-name">Bildregie</span>
+    </div>
+
+    <div class="bar-group">
+        <label class="field field--inline">
+            <span class="field-label">Prozessor</span>
+            <select id="processor-select" class="input"></select>
+        </label>
+
+        <label class="field field--inline">
+            <span class="field-label">Screen</span>
+            <select id="screen-select" class="input"></select>
+        </label>
+    </div>
+
+    <div id="scene-switch" class="scene-switch" role="radiogroup" aria-label="Szene">
+        <button class="scene-key scene-key--pgm" data-scene="2" role="radio" aria-checked="true">
+            <span class="scene-key-lamp" aria-hidden="true"></span>PGM
+        </button>
+        <button class="scene-key scene-key--pvw" data-scene="4" role="radio" aria-checked="false">
+            <span class="scene-key-lamp" aria-hidden="true"></span>PVW
+        </button>
+    </div>
+
+    <div class="bar-spacer"></div>
+
+    <div id="node-status" class="status">
+        <span class="status-dot" aria-hidden="true"></span>
+        <span id="node-text">Verbinde…</span>
+    </div>
+
+    <button id="refresh-btn" class="btn btn--quiet" title="Neu laden (R)">
+        <span aria-hidden="true">⟳</span><span class="btn-text">Laden</span>
+    </button>
+    <a class="btn btn--quiet" href="index.html">Technisch</a>
+    <button id="take-btn" class="take" title="Preview auf Program schalten">
+        <span class="take-label">Take</span>
+        <span class="take-sub">PVW → PGM</span>
+    </button>
+</header>
+
+<div id="toasts" class="toasts" aria-live="polite"></div>
+
+<!-- Arbeitsfläche ----------------------------------------------------- -->
+<main class="work">
+
+    <!-- Quellen -->
+    <aside class="panel panel--sources">
+        <div class="panel-head">
+            <h2 class="panel-title">Quellen</h2>
+            <span id="source-count" class="tag"></span>
+        </div>
+        <div class="panel-tools">
+            <input id="source-filter" class="input input--search" type="search"
+                   placeholder="Suchen…" aria-label="Quellen suchen">
+            <div id="type-filter" class="segmented" role="group" aria-label="Nach Anschluss filtern"></div>
+            <label class="switch">
+                <input type="checkbox" id="only-active" checked>
+                <span class="switch-track" aria-hidden="true"></span>
+                <span class="switch-text">nur belegte Ports</span>
+            </label>
+        </div>
+        <div id="palette" class="palette">
+            <p class="hint">Quellen werden geladen…</p>
+        </div>
+        <p class="hint hint--foot">Ziehen zum Platzieren · Doppelklick legt formatfüllend an</p>
+    </aside>
+
+    <!-- Bühne -->
+    <section class="panel panel--stage">
+        <div class="panel-head">
+            <h2 class="panel-title">
+                <span id="screen-type" class="tag tag--type">–</span>
+                <span id="screen-name" class="screen-name">kein Screen</span>
+            </h2>
+            <span id="stage-meta" class="meta"></span>
+        </div>
+
+        <!-- Signaturelement: Tally-Rahmen. Rot = PGM liegt live an. -->
+        <div id="tally" class="tally" data-scene="pgm">
+            <div class="tally-strip">
+                <span id="tally-word" class="tally-word">Live</span>
+            </div>
+            <div id="canvas" class="canvas">
+                <div id="guides" class="guides" aria-hidden="true"></div>
+                <p id="canvas-empty" class="canvas-empty">Zieh eine Quelle hierher</p>
+            </div>
+        </div>
+
+        <div id="bkg-bar" class="bkg">
+            <label class="switch">
+                <input type="checkbox" id="bkg-enable">
+                <span class="switch-track" aria-hidden="true"></span>
+                <span class="switch-text">Hintergrund</span>
+            </label>
+            <select id="bkg-source" class="input" aria-label="Hintergrundbild"></select>
+            <span id="bkg-meta" class="meta"></span>
+        </div>
+    </section>
+
+    <!-- Layer -->
+    <aside class="panel panel--layers">
+        <div class="panel-head">
+            <h2 class="panel-title">Layer</h2>
+            <span id="layer-count" class="tag"></span>
+        </div>
+        <div id="layers" class="layers">
+            <p class="hint">Layer werden geladen…</p>
+        </div>
+        <p class="hint hint--foot">Pfeiltasten verschieben · Shift für 10 px · Entf löscht</p>
+    </aside>
+</main>
+
+<!-- Befehle ----------------------------------------------------------- -->
+<section class="panel panel--cmd">
+    <details id="cmd-box" open>
+        <summary class="panel-head panel-head--summary">
+            <h2 class="panel-title">Wrapper-Befehle</h2>
+            <span id="cmd-scene" class="tag">PGM</span>
+            <span class="meta">baut diese Szene von Grund auf nach</span>
+            <button id="cmd-copy" class="btn btn--quiet">Alle kopieren</button>
+        </summary>
+        <div id="cmd-list" class="cmd-list"></div>
+    </details>
+</section>
+
+<script src="stage.js?v=2"></script>
+</body>
+</html>
