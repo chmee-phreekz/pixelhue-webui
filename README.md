@@ -7,7 +7,7 @@ mit Firmware V1.8.0).
 Die Erkenntnisse über die Geräte-API stammen aus Wireshark-Mitschnitten der
 Original-Software „PixelFlow" und wurden an zwei Geräten (P20 virtuell, P10
 real) gegengeprüft.
-![alt text](Isolated.png "ui_visual_1.png")
+![visual ui]("./ui_visual_1.png")
 
 ---
 
